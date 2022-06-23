@@ -1,0 +1,65 @@
+{% load bootstrap4 %}
+{% comment %} загружается коллекция шаблонных тегов, затем файл объявляем как документ html  {% endcomment %}
+<!DOCTYPE HTML>
+<html>
+<head>  {% comment %} начало заголовока файла {% endcomment %}          
+	<meta http-equiv = "Content-Type" content = "text/html" charset = "utf-8">
+ 	<meta name = "viewport" content = "width=device-width, initial-scale=1,
+	  shrink-to-fit=no"/>
+	<title>Learning Log</title> {% comment %} строка заголовка браузера {% endcomment %}
+
+	{% bootstrap_css %} {% comment %}  включить все стилевые файлы {% endcomment %}
+	{% bootstrap_javascript jquery='full' %} {% comment %} активизирует все интерактивное поведение, которое может исп-ся на странице {% endcomment %}
+</head>
+<body>
+ {% comment %} mb - margin-bottom(нижнее поле). Этот селектор гарантирует, что между навигационной панелью и остальным контентом страницы останется свободное место. Селектор border создает тонкую рамку вокруг светлого фона {% endcomment %}  
+<nav class = "navbar navbar-expand-md navbar-light bg-light mb-4 border"> {% comment %} раздел навигационных ссылок на странице, весь контент тут оформляется по правилам bootstrap,определяемым селекторами navbar  {% endcomment %}
+	{% comment %} Селектор определяет, к каким элементам страницы должно применяться стилевое правило. navbar-light bg-light - оформляют навигационную панель светлой темой  {% endcomment %}  
+  <a class = "navbar-brand" href = "{% url 'learning_logs:index' %}">Leaning Log</a> {% comment %} создаем ссылку на домашнюю страницу. navbar-brand - оформляет ссылку так, чтоб она выделялась на фоне остальных ссылок {% endcomment %} {% comment %} задаем имя проекта, которое выводится у левого края навигационной панели  {% endcomment %}
+	<button class = "navbar-toggler" type = "button" data-toggle = "collapse" {% comment %} шаблон определяет кнопку, которая будет отображаться, если ширины браузера не хватает для горизонтального отображения всей навигационной панели {% endcomment %}
+			data-target = "#navbarCollapse" aria-controls = "navbarCollapse" {% comment %} collapse - сворачивает навигац. панель при уменьшении размеров окна браузера {% endcomment %}
+			aria-expanded = "false" aria-label = "Toggle navigation">
+		<span class = "navbar-toggler-icon"></span>
+	</button>
+	<div class = "collapse navbar-collapse" id = "navbarCollapse"> {% comment %} открывается новая секция навигационной панели. {% endcomment %}
+		<ul class = "navbar-nav mr-auto">  {% comment %} определяется новый набор ссылок {% endcomment %}
+			<li class = "nav-item">
+				<a href = "{% url 'learning_logs:topics' %}" class = "nav-link">Topics</a>
+			</li>
+		</ul>
+    {% comment %} новый набор ссылок при помощи вновь открывающегося тега <u1. Можно создать столько групп ссылок, сколько понадобится {% endcomment %}
+    {% comment %} ml-auto - автоматическое левое поле. Этот селектор анализирует другие элементы на навигационной панели и определяет величину левого поля {% endcomment %}
+		<ul class = "navbar-nav ml-auto">
+			{% if user.is_authenticated %}
+				<li class = "nav-item">
+          {% comment %} span оформляет фрагменты текста или элементы страницы, которые являются частью более длинной строки u1. {% endcomment %}
+          {% comment %} здесь элемент span  нужен для оформлении текста на навигационной панели(имя пользователя) {% endcomment %}
+          {% comment %} div - создают собственный раздел страницы. span - непрерывно располагаются внутри большого раздела {% endcomment %}
+					<span class = "navbar-text">Hello, {{ user.username }}.</span>
+				</li>
+				<li class = "nav-item">
+					<a href = "{% url 'users:logout' %}" class="nav-link">Log out</a>
+				</li>
+			{% else %}
+				<li class = "nav-item">
+					<a href = "{% url 'users:register' %}" class = "nav-link">Register</a>
+				</li>
+				<li class = "nav-item">
+					<a href = "{% url 'users:login' %}" class = "nav-link">Log in</a>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
+</nav>
+{% comment %} main используют для основного контента в теле страницы. Селектор container - простой способ группировки элементов на странице {% endcomment %}
+<main role = "main" class="container">
+	<div class = "pb-2 mb-2 border-bottom">
+{% comment %} для отображения заголовка большинства страниц. pb-2 - отступ в нижней части оформляемого элемента. Нам нужна граница только в нижней части страницы, поэтому используем border-bottom {% endcomment %}
+		{% block page_header %}{% endblock page_header %}
+	</div>
+	<div>
+		{% block content %}{% endblock content %}
+	</div>
+</main>
+</body>
+</html>

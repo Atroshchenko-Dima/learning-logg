@@ -1,0 +1,20 @@
+{% extends 'learning_logs/base.html' %}
+{% load bootstrap4 %}
+{% comment %} в блоке page_header описываем, для чего нужна страница. {% endcomment %}
+{% comment %} Ранее здесь был блок {% if form.errors %}, его удалили, т.к boostrap управляет ошибками формы автоматически {% endcomment %}
+{% block page_header %}
+  <h2>Log in to your account</h2> 
+{% endblock page_header %}
+ 
+{% block content %}
+  <form method = "post" action = "{% url 'users:login' %}" class = "form"> {% comment %} URL страницы входа  {% endcomment %}
+    {% csrf_token %}
+    {% bootstrap_form form %} {% comment %} заменяет тег {form.as_p}. вставляет правила в отдельные элементы формы при ее построении {% endcomment %}
+    {% buttons %} {% comment %} стилевое оформление к кнопкам {% endcomment %}
+      <button name = "submit" class = "btn btn-primary">Log in</button>
+    {% endbuttons %}
+
+    <input type = "hidden" name = "next"
+      value = "{% url 'learning_logs:index' %}"/> {% comment %} value сообщает джанго, куда перенаправить пользователя(в нашем случае на домашнюю страницу) {% endcomment %}
+  </form>
+{% endblock content %}
