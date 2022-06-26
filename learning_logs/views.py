@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 
+
 def index(request):
     # Домашняя страница приложения Learning_logs
     return render(request, 'learning_logs/index.html')
@@ -20,8 +21,7 @@ def topic(request, topic_id):
     """Выводит одну тему и все ее записи."""
     topic = get_object_or_404(Topic, id=topic_id)  # get используется для получения темы
     # Проверка того, что тема принадлежит текущему пользователю
-    if topic.owner != request.user:
-        raise Http404
+    _check_topic_owner(request, topic)
     entries = topic.entry_set.order_by('-date_added') # загружаются записи, связанные с данной темой и они упорядочиваются по значению data_added. - означает сортировку в обратном порядке, т.е последнии записи оказываются на первых местах
     context = {'topic': topic, 'entries': entries} # Темы и записи сохраняются в словаре context, который передается шаблону topic.html
     return render(request, 'learning_logs/topic.html', context)
@@ -48,6 +48,7 @@ def new_topic(request):
 def new_entry(request, topic_id):
     """Добавляет новую запись по конкретной теме."""
     topic = get_object_or_404(Topic, id=topic_id)
+    _check_topic_owner(request, topic)
     if request.method != 'POST':
         # Данные не отправлялись; создается пустая форма.
         form = EntryForm() 
@@ -72,8 +73,7 @@ def edit_entry(request, entry_id):
     # редактирует существующую запись
     entry = get_object_or_404(Entry, id=entry_id) # получаем объект записи, который пользователь хочет изменить, и тему, связанную с этой записью
     topic = entry.topic
-    if topic.owner != request.user:
-        raise Http404
+    _check_topic_owner(request, topic)
     if request.method != 'POST':
         # исходный запрос, форма заполняется данными текущей записи
         form = EntryForm(instance=entry) # instance=entry - приказывает создать форму, заранее заполненную информацией из существующего объекта записей
@@ -85,3 +85,21 @@ def edit_entry(request, entry_id):
             return redirect('learning_logs:topic', topic_id=topic.id)
     context = {'entry' : entry,'topic' : topic, 'form' : form}
     return render(request, 'learning_logs/edit_entry.html', context)
+
+@login_required()
+def delete_entry(request, entry_id):
+    entry = get_object_or_404(Entry, id=entry_id)
+    _check_topic_owner(request, entry.topic)
+    entry.delete()
+    return redirect('learning_logs:topic', topic_id=entry.topic.id)
+
+@login_required()
+def delete_topic(request, topic_id):
+    topic = get_object_or_404(Topic, id=topic_id)
+    _check_topic_owner(request, topic)
+    topic.delete()
+    return redirect('learning_logs:topics')
+
+def _check_topic_owner(request, topic):
+    if topic.owner != request.user:
+        raise Http404

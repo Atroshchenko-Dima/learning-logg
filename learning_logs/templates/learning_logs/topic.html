@@ -6,15 +6,18 @@
 
 {% block content %}
   <p>
-<a href = "{% url 'learning_logs:new_entry' topic.id %}">Add a new entry</a>
+<a href="{% url 'learning_logs:new_entry' topic.id %}" class="btn btn-primary" role="button">Add a new entry</a>
+<a href="{% url 'learning_logs:delete_topic' topic.id %}" class="btn btn-danger" role="button">Delete Topic</a>
   </p>
    
   {% for entry in entries %}  {% comment %} card - имеет два вложенных элемента. Первый предназначен для хранения временной метки и ссылки для редактирования. Второй - для хранения тела записи. {% endcomment %}
     <div class = "card mb-3"> {% comment %} Вместо того чтобы превращать каждую запись в элемент списка создаем элемент с селектором card {% endcomment %}
       <h4 class = "card-header"> {% comment %} Первый элемент - заголовок содержащий дату создания записи(см. ниже) {% endcomment %}
         {{ entry.date_added|date:'M d, Y H:i' }}
-        <small><a href = "{% url 'learning_logs:edit_entry' entry.id %}"> {% comment %}и ссылку для ее редактирования. small - чтоб ссылка была чуть меньше временной метки{% endcomment %}
+        <small><a href="{% url 'learning_logs:edit_entry' entry.id %}" class="btn btn-outline-warning btn-sm" role="button"> {% comment %}и ссылку для ее редактирования. small - чтоб ссылка была чуть меньше временной метки{% endcomment %}
             edit entry</a></small>
+        <small><a href="{% url 'learning_logs:delete_entry' entry.id %}" class="btn btn-outline-danger btn-sm" role="button"> {% comment %}и ссылку для ее редактирования. small - чтоб ссылка была чуть меньше временной метки{% endcomment %}
+            delete entry</a></small>
       </h4>
     <div class = "card-body"> {% comment %}Второй элемент card. Размещает текст записи в простом поле на карте{% endcomment %}
       {{ entry.text|linebreaks }}
